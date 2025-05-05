@@ -1,6 +1,6 @@
 <p align="center">
   <b>Sistem Pemesanan Makanan & Minuman</b><br>
-  <i>(Food Ordering System - Metode COD)</i><br><br>
+  <i>(FoodHub)</i><br><br>
   <img src="images/logoFoodHub.png" width="150"><br><br>
   <b>Muhammad Naufal. N</b><br>
   <b>D0223325</b><br><br>
