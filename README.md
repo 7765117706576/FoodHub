@@ -1,9 +1,9 @@
 <p align="center">
   <b>Sistem Pemesanan Makanan & Minuman</b><br>
-  <i>(Food Ordering System)</i><br><br>
+  <i>(Food Ordering System - Metode COD)</i><br><br>
   <img src="images/logoFoodHub.png" width="150"><br><br>
-  <b>MUHAMMAD NAUFAL. N</b><br>
-  <b>D0223325</b><br><br>
+  <b>Faril</b><br>
+  <b>D0223015</b><br><br>
   Framework Web Based<br>
   2025
 </p>
@@ -15,7 +15,7 @@
 | Role     | Fitur                                                                                                                                   |
 |----------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | Admin    | - Mengelola seluruh data pengguna (penjual & pelanggan) <br> - Melihat dan menghapus produk <br> - Melihat semua transaksi             |
-| Penjual  | - Menambahkan, mengedit, dan menghapus produk <br> - Melihat pesanan terhadap produk miliknya <br> - Mengubah status pesanan           |
+| Penjual  | - Menambahkan, mengedit, dan menghapus produk <br> - Melihat pesanan terhadap produk miliknya <br> - Menetapkan kurir <br> - Mengubah status pesanan |
 | Customer | - Melihat dan mencari produk <br> - Menambahkan produk ke keranjang dan melakukan pemesanan <br> - Melihat riwayat pesanan mereka      |
 
 ---
@@ -79,14 +79,16 @@
 
 ### Tabel 5: `orders`
 
-| Nama Field   | Tipe Data    | Keterangan                                |
-|--------------|--------------|-------------------------------------------|
-| id           | BIGINT       | Primary key                               |
-| customer_id  | BIGINT       | Relasi ke `customers`                     |
-| total_price  | DECIMAL      | Total harga pemesanan                     |
-| status       | ENUM         | Status: pending, processing, completed, cancelled |
-| created_at   | TIMESTAMP    | Waktu dibuat                              |
-| updated_at   | TIMESTAMP    | Waktu diperbarui                          |
+| Nama Field   | Tipe Data     | Keterangan                                                   |
+|--------------|---------------|--------------------------------------------------------------|
+| id           | BIGINT        | Primary key                                                  |
+| customer_id  | BIGINT        | Relasi ke `customers`                                       |
+| total_price  | DECIMAL       | Total harga pesanan                                         |
+| status       | ENUM          | `pending`, `confirmed`, `on_delivery`, `completed`, `cancelled` |
+| is_paid      | BOOLEAN       | Status pembayaran: `false` saat pesan, `true` saat dibayar  |
+| courier_id   | BIGINT        | (Opsional) Relasi ke `couriers`                             |
+| created_at   | TIMESTAMP     | Waktu dibuat                                                |
+| updated_at   | TIMESTAMP     | Waktu diperbarui                                            |
 
 ---
 
@@ -97,8 +99,21 @@
 | id         | BIGINT       | Primary key                              |
 | order_id   | BIGINT       | Relasi ke `orders`                       |
 | product_id | BIGINT       | Relasi ke `products`                     |
-| quantity   | INTEGER      | Jumlah produk yang dipesan               |
+| quantity   | INTEGER      | Jumlah produk                            |
 | price      | DECIMAL      | Harga satuan saat dipesan                |
+| created_at | TIMESTAMP    | Waktu dibuat                             |
+| updated_at | TIMESTAMP    | Waktu diperbarui                         |
+
+---
+
+### Tabel 7: `couriers`
+
+| Nama Field | Tipe Data    | Keterangan                               |
+|------------|--------------|------------------------------------------|
+| id         | BIGINT       | Primary key                              |
+| seller_id  | BIGINT       | Relasi ke `sellers`                      |
+| name       | VARCHAR(255) | Nama kurir                               |
+| phone      | VARCHAR(20)  | Nomor HP kurir                           |
 | created_at | TIMESTAMP    | Waktu dibuat                             |
 | updated_at | TIMESTAMP    | Waktu diperbarui                         |
 
@@ -106,18 +121,31 @@
 
 ## Relasi Antar Tabel
 
-- **`users`** memiliki relasi *one-to-one* ke `sellers` dan `customers` berdasarkan role.
-  - Foreign key: `user_id` di `sellers` dan `customers` → `users.id`
-  - Penjelasan: 1 user bisa menjadi 1 penjual atau 1 customer, tergantung role-nya.
+- **`users`** ↔ `sellers` / `customers` (One-to-One)
+  - 1 user hanya bisa menjadi 1 penjual atau 1 customer.
 
-- **`sellers`** memiliki relasi *one-to-many* ke `products`.
-  - Foreign key: `seller_id` di `products` → `sellers.id`
+- **`sellers`** ↔ `products` (One-to-Many)
+  - 1 penjual bisa memiliki banyak produk.
 
-- **`customers`** memiliki relasi *one-to-many* ke `orders`.
-  - Foreign key: `customer_id` di `orders` → `customers.id`
+- **`customers`** ↔ `orders` (One-to-Many)
+  - 1 customer bisa membuat banyak pesanan.
 
-- **`orders`** memiliki relasi *one-to-many* ke `order_items`.
-  - Foreign key: `order_id` di `order_items` → `orders.id`
+- **`orders`** ↔ `order_items` (One-to-Many)
+  - 1 order bisa terdiri dari banyak item produk.
 
-- **`products`** memiliki relasi *one-to-many* ke `order_items`.
-  - Foreign key: `product_id` di `order_items` → `products.id`
+- **`products`** ↔ `order_items` (One-to-Many)
+  - 1 produk bisa dibeli dalam banyak pesanan berbeda.
+
+- **`sellers`** ↔ `couriers` (One-to-Many)
+  - 1 penjual bisa memiliki beberapa kurir.
+
+- **`orders`** ↔ `couriers` (Many-to-One, opsional)
+  - 1 order bisa dikirim oleh 1 kurir.
+
+---
+
+## Metode Pembayaran
+
+- Sistem hanya menggunakan **COD (Cash on Delivery)**.
+- Kurir akan mengantarkan pesanan dan menerima pembayaran langsung dari customer.
+- Setelah kurir mengonfirmasi pembayaran, status `is_paid` diubah menjadi `true` dan status order menjadi `completed`.
