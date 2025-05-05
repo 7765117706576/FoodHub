@@ -1,61 +1,123 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <b>Sistem Pemesanan Makanan & Minuman</b><br>
+  <i>(Food Ordering System)</i><br><br>
+  <img src="images/logoFoodHub.png" width="150"><br><br>
+  <b>MUHAMMAD NAUFAL. N</b><br>
+  <b>D0223325</b><br><br>
+  Framework Web Based<br>
+  2025
 </p>
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Role dan Fitur-fiturnya
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Role     | Fitur                                                                                                                                   |
+|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Admin    | - Mengelola seluruh data pengguna (penjual & pelanggan) <br> - Melihat dan menghapus produk <br> - Melihat semua transaksi             |
+| Penjual  | - Menambahkan, mengedit, dan menghapus produk <br> - Melihat pesanan terhadap produk miliknya <br> - Mengubah status pesanan           |
+| Customer | - Melihat dan mencari produk <br> - Menambahkan produk ke keranjang dan melakukan pemesanan <br> - Melihat riwayat pesanan mereka      |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Struktur Tabel Database
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Tabel 1: `users`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+| Nama Field | Tipe Data    | Keterangan                                 |
+|------------|--------------|--------------------------------------------|
+| id         | BIGINT       | Primary key, auto increment                |
+| name       | VARCHAR(255) | Nama lengkap pengguna                      |
+| email      | VARCHAR(255) | Email unik untuk login                     |
+| password   | VARCHAR(255) | Password terenkripsi                       |
+| role       | ENUM         | Role pengguna: admin, seller, customer     |
+| created_at | TIMESTAMP    | Waktu dibuat                               |
+| updated_at | TIMESTAMP    | Waktu diperbarui                           |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+### Tabel 2: `sellers`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Nama Field | Tipe Data    | Keterangan                                   |
+|------------|--------------|----------------------------------------------|
+| id         | BIGINT       | Primary key                                  |
+| user_id    | BIGINT       | Relasi ke `users`, hanya jika role = seller |
+| store_name | VARCHAR(255) | Nama toko                                    |
+| address    | VARCHAR(255) | Alamat toko                                  |
+| created_at | TIMESTAMP    | Waktu dibuat                                 |
+| updated_at | TIMESTAMP    | Waktu diperbarui                             |
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+### Tabel 3: `customers`
 
-## Contributing
+| Nama Field    | Tipe Data    | Keterangan                                  |
+|---------------|--------------|---------------------------------------------|
+| id            | BIGINT       | Primary key                                 |
+| user_id       | BIGINT       | Relasi ke `users`, hanya jika role = customer |
+| phone_number  | VARCHAR(50)  | Nomor HP                                    |
+| address       | VARCHAR(255) | Alamat pelanggan                            |
+| created_at    | TIMESTAMP    | Waktu dibuat                                |
+| updated_at    | TIMESTAMP    | Waktu diperbarui                            |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+### Tabel 4: `products`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Nama Field  | Tipe Data    | Keterangan                               |
+|-------------|--------------|------------------------------------------|
+| id          | BIGINT       | Primary key                              |
+| seller_id   | BIGINT       | Relasi ke `sellers`                      |
+| name        | VARCHAR(255) | Nama produk                              |
+| description | TEXT         | Deskripsi produk                         |
+| price       | DECIMAL      | Harga produk                             |
+| image       | VARCHAR(255) | Gambar produk (opsional)                 |
+| created_at  | TIMESTAMP    | Waktu dibuat                             |
+| updated_at  | TIMESTAMP    | Waktu diperbarui                         |
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Tabel 5: `orders`
 
-## License
+| Nama Field   | Tipe Data    | Keterangan                                |
+|--------------|--------------|-------------------------------------------|
+| id           | BIGINT       | Primary key                               |
+| customer_id  | BIGINT       | Relasi ke `customers`                     |
+| total_price  | DECIMAL      | Total harga pemesanan                     |
+| status       | ENUM         | Status: pending, processing, completed, cancelled |
+| created_at   | TIMESTAMP    | Waktu dibuat                              |
+| updated_at   | TIMESTAMP    | Waktu diperbarui                          |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+### Tabel 6: `order_items`
+
+| Nama Field | Tipe Data    | Keterangan                               |
+|------------|--------------|------------------------------------------|
+| id         | BIGINT       | Primary key                              |
+| order_id   | BIGINT       | Relasi ke `orders`                       |
+| product_id | BIGINT       | Relasi ke `products`                     |
+| quantity   | INTEGER      | Jumlah produk yang dipesan               |
+| price      | DECIMAL      | Harga satuan saat dipesan                |
+| created_at | TIMESTAMP    | Waktu dibuat                             |
+| updated_at | TIMESTAMP    | Waktu diperbarui                         |
+
+---
+
+## Relasi Antar Tabel
+
+- **`users`** memiliki relasi *one-to-one* ke `sellers` dan `customers` berdasarkan role.
+  - Foreign key: `user_id` di `sellers` dan `customers` → `users.id`
+  - Penjelasan: 1 user bisa menjadi 1 penjual atau 1 customer, tergantung role-nya.
+
+- **`sellers`** memiliki relasi *one-to-many* ke `products`.
+  - Foreign key: `seller_id` di `products` → `sellers.id`
+
+- **`customers`** memiliki relasi *one-to-many* ke `orders`.
+  - Foreign key: `customer_id` di `orders` → `customers.id`
+
+- **`orders`** memiliki relasi *one-to-many* ke `order_items`.
+  - Foreign key: `order_id` di `order_items` → `orders.id`
+
+- **`products`** memiliki relasi *one-to-many* ke `order_items`.
+  - Foreign key: `product_id` di `order_items` → `products.id`
