@@ -1,7 +1,7 @@
 <p align="center">
   <b>Sistem Pemesanan Makanan & Minuman</b><br>
   <i>(FoodHub)</i><br><br>
-  <img src="images/logoFoodHub.png" width="150"><br><br>
+  <img src="https://github.com/user-attachments/assets/3b46afe6-4be0-40ac-be1b-d7ba9f8f81cc" width="150"><br><br>
   <b>Muhammad Naufal. N</b><br>
   <b>D0223325</b><br><br>
   Framework Web Based<br>
