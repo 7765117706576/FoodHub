@@ -2,8 +2,8 @@
   <b>Sistem Pemesanan Makanan & Minuman</b><br>
   <i>(Food Ordering System - Metode COD)</i><br><br>
   <img src="images/logoFoodHub.png" width="150"><br><br>
-  <b>Faril</b><br>
-  <b>D0223015</b><br><br>
+  <b>Muhammad Naufal. N</b><br>
+  <b>D0223325</b><br><br>
   Framework Web Based<br>
   2025
 </p>
