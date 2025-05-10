@@ -82,8 +82,8 @@
 | Nama Field   | Tipe Data     | Keterangan                                                   |
 |--------------|---------------|--------------------------------------------------------------|
 | id           | BIGINT        | Primary key                                                  |
-| customer_id  | BIGINT        | Relasi ke `customers`                                       |
-| total_price  | DECIMAL       | Total harga pesanan                                         |
+| customer_id  | BIGINT        | Relasi ke `customers`                                        |
+| total_price  | DECIMAL       | Total harga pesanan                                          |
 | status       | ENUM          | `pending`, `confirmed`, `on_delivery`, `completed`, `cancelled` |
 | is_paid      | BOOLEAN       | Status pembayaran: `false` saat pesan, `true` saat dibayar  |
 | courier_id   | BIGINT        | (Opsional) Relasi ke `couriers`                             |
@@ -119,33 +119,63 @@
 
 ---
 
-## Relasi Antar Tabel
+### Tabel 8: `categories`
 
-- **`users`** ↔ `sellers` / `customers` (One-to-One)
-  - 1 user hanya bisa menjadi 1 penjual atau 1 customer.
-
-- **`sellers`** ↔ `products` (One-to-Many)
-  - 1 penjual bisa memiliki banyak produk.
-
-- **`customers`** ↔ `orders` (One-to-Many)
-  - 1 customer bisa membuat banyak pesanan.
-
-- **`orders`** ↔ `order_items` (One-to-Many)
-  - 1 order bisa terdiri dari banyak item produk.
-
-- **`products`** ↔ `order_items` (One-to-Many)
-  - 1 produk bisa dibeli dalam banyak pesanan berbeda.
-
-- **`sellers`** ↔ `couriers` (One-to-Many)
-  - 1 penjual bisa memiliki beberapa kurir.
-
-- **`orders`** ↔ `couriers` (Many-to-One, opsional)
-  - 1 order bisa dikirim oleh 1 kurir.
+| Nama Field   | Tipe Data    | Keterangan                               |
+|--------------|--------------|------------------------------------------|
+| id           | BIGINT       | Primary key                              |
+| name         | VARCHAR(255) | Nama kategori                            |
+| created_at   | TIMESTAMP    | Waktu dibuat                             |
+| updated_at   | TIMESTAMP    | Waktu diperbarui                         |
 
 ---
 
-## Metode Pembayaran
+### Tabel 9: `category_product` (Many-to-Many Relasi)
 
-- Sistem hanya menggunakan **COD (Cash on Delivery)**.
-- Kurir akan mengantarkan pesanan dan menerima pembayaran langsung dari customer.
-- Setelah kurir mengonfirmasi pembayaran, status `is_paid` diubah menjadi `true` dan status order menjadi `completed`.
+| Nama Field   | Tipe Data    | Keterangan                               |
+|--------------|--------------|------------------------------------------|
+| id           | BIGINT       | Primary key                              |
+| product_id   | BIGINT       | Relasi ke `products`                     |
+| category_id  | BIGINT       | Relasi ke `categories`                   |
+| created_at   | TIMESTAMP    | Waktu dibuat                             |
+| updated_at   | TIMESTAMP    | Waktu diperbarui                         |
+
+---
+
+## Relasi Antar Tabel
+
+- **`users`** ↔ `sellers` / `customers` (One-to-One)  
+  > 1 user hanya bisa menjadi 1 penjual atau 1 customer.
+
+- **`sellers`** ↔ `products` (One-to-Many)  
+  > 1 penjual bisa memiliki banyak produk.
+
+- **`customers`** ↔ `orders` (One-to-Many)  
+  > 1 customer bisa membuat banyak pesanan.
+
+- **`orders`** ↔ `order_items` (One-to-Many)  
+  > 1 order bisa terdiri dari banyak item produk.
+
+- **`products`** ↔ `order_items` (One-to-Many)  
+  > 1 produk bisa dibeli dalam banyak pesanan berbeda.
+
+- **`sellers`** ↔ `couriers` (One-to-Many)  
+  > 1 penjual bisa memiliki beberapa kurir.
+
+- **`orders`** ↔ `couriers` (Many-to-One, opsional)  
+  > 1 order bisa dikirim oleh 1 kurir.
+
+- **`products`** ↔ `categories` (Many-to-Many)  
+  > 1 produk bisa masuk ke beberapa kategori, dan 1 kategori bisa berisi banyak produk. Relasi ini dihubungkan oleh tabel pivot `category_product`.
+
+---
+
+## Metode Pembayaran (COD)
+
+- Sistem hanya mendukung **Cash on Delivery**.
+- Kurir mengantarkan pesanan dan menerima pembayaran langsung dari customer.
+- Setelah customer menerima barang dan melakukan konfirmasi, sistem:
+  - Mengubah `is_paid = true`
+  - Mengubah `status = completed`
+
+---
